@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light" data-palette="orange">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="FoodTales — Discover delicious recipes, step-by-step cooking instructions, portion adjustments, and pantry ingredient matching.">
+  <title>FoodTales — Delicious Recipes & Step-by-Step Cooking</title>
+  
+  <!-- Google Fonts: Inter (Clean modern UI) + Outfit (Sleek Geometric Headings) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Floating Background Ambient Mesh Gradients -->
+  <div class="ambient-glow glow-1" aria-hidden="true"></div>
+  <div class="ambient-glow glow-2" aria-hidden="true"></div>
+  <div class="ambient-glow glow-3" aria-hidden="true"></div>
+
+  <!-- Confetti Canvas Overlay for Celebrations -->
+  <canvas id="confetti-canvas" class="confetti-canvas" aria-hidden="true"></canvas>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <div class="container nav-container">
+      <a href="#" class="brand-logo" id="brand-home-btn" aria-label="FoodTales Home">
+        <div class="logo-icon-wrap">
+          <i class="fa-solid fa-utensils"></i>
+        </div>
+        <span class="logo-text">FOOD<strong>TALES</strong></span>
+      </a>
+
+      <nav class="nav-links" id="main-nav">
+        <button class="nav-btn active" id="nav-explore-btn">
+          <i class="fa-solid fa-compass"></i> <span>Explore</span>
+        </button>
+        <button class="nav-btn" id="nav-pantry-btn">
+          <i class="fa-solid fa-kitchen-set"></i> <span>Fridge Match</span>
+        </button>
+        <button class="nav-btn" id="nav-spotlight-btn">
+          <i class="fa-solid fa-wand-magic-sparkles"></i> <span>Spotlight</span>
+        </button>
+        <button class="nav-btn" id="nav-favorites-btn">
+          <i class="fa-solid fa-heart"></i> <span>Favorites</span>
+          <span class="badge" id="favorites-count-badge">0</span>
+        </button>
+        <button class="nav-btn surprise-btn" id="nav-surprise-btn" title="Random recipe generator">
+          <i class="fa-solid fa-dice"></i> <span>Surprise Me!</span>
+        </button>
+      </nav>
+
+      <div class="nav-actions">
+        <!-- Interactive Theme Palette Picker -->
+        <div class="palette-dropdown-wrap">
+          <button id="palette-btn" class="icon-btn" aria-label="Choose color palette" title="Change Theme Accent">
+            <i class="fa-solid fa-palette"></i>
+          </button>
+          <div class="palette-menu" id="palette-menu">
+            <span class="palette-title">Accent Theme</span>
+            <div class="palette-options">
+              <button class="color-option-btn active" data-palette="orange" title="Flame Orange">
+                <span class="color-dot dot-orange"></span> Orange
+              </button>
+              <button class="color-option-btn" data-palette="amber" title="Golden Amber">
+                <span class="color-dot dot-amber"></span> Amber
+              </button>
+              <button class="color-option-btn" data-palette="rose" title="Berry Rose">
+                <span class="color-dot dot-rose"></span> Rose
+              </button>
+              <button class="color-option-btn" data-palette="emerald" title="Fresh Mint">
+                <span class="color-dot dot-emerald"></span> Mint
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sound FX Audio Toggle -->
+        <button id="sound-toggle-btn" class="icon-btn" aria-label="Toggle sound effects" title="Sound Effects: ON">
+          <i class="fa-solid fa-volume-high"></i>
+        </button>
+
+        <!-- Dark/Light Theme Toggle -->
+        <button id="theme-toggle-btn" class="icon-btn" aria-label="Toggle Dark Mode" title="Toggle Light/Dark Theme">
+          <i class="fa-solid fa-moon"></i>
+        </button>
+
+        <button id="mobile-menu-btn" class="icon-btn mobile-only" aria-label="Toggle navigation menu">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main>
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="container hero-container">
+        <div class="hero-content">
+          <h1 class="hero-title">
+            Simple, Delicious Meals <br>
+            <span class="gradient-text">Made for Everyday Cooking</span>
+          </h1>
+
+          <p class="hero-subtitle">
+            Explore flavorful recipes, follow easy step-by-step guides, adjust portions to fit your table, and find great dishes using ingredients you already have at home.
+          </p>
+
+          <!-- Search Bar -->
+          <form class="search-form" id="search-form" role="search" onsubmit="event.preventDefault();">
+            <div class="search-input-wrapper">
+              <div class="search-icon-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+              </div>
+              <input 
+                type="text" 
+                id="search-input" 
+                placeholder="Search by recipe, cuisine, or ingredient (e.g. Pasta, Tikka, Taco, Salmon)..." 
+                autocomplete="off" 
+                aria-label="Search recipes"
+              >
+              <button type="button" id="clear-search-btn" class="clear-btn" aria-label="Clear search" style="display: none;">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+            <button type="submit" class="primary-btn search-submit-btn" id="search-submit-btn">
+              <span>Find Recipes</span>
+              <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </form>
+
+          <!-- Trending Quick-Search Chips -->
+          <div class="trending-chips-wrapper">
+            <span class="trending-label"><i class="fa-solid fa-fire"></i> Popular:</span>
+            <div class="trending-chips" id="trending-chips">
+              <button type="button" class="trend-chip" data-search="Pasta"><i class="fa-solid fa-bowl-food"></i> Pasta</button>
+              <button type="button" class="trend-chip" data-search="Chicken"><i class="fa-solid fa-drumstick-bite"></i> Chicken</button>
+              <button type="button" class="trend-chip" data-search="Paneer"><i class="fa-solid fa-cheese"></i> Paneer</button>
+              <button type="button" class="trend-chip" data-search="Pancakes"><i class="fa-solid fa-cake-candles"></i> Pancakes</button>
+              <button type="button" class="trend-chip" data-search="Salmon"><i class="fa-solid fa-fish"></i> Salmon</button>
+              <button type="button" class="trend-chip" data-search="Tacos"><i class="fa-solid fa-utensils"></i> Tacos</button>
+              <button type="button" class="trend-chip" data-search="Chocolate"><i class="fa-solid fa-cookie-bite"></i> Chocolate</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Interactive "What's in Your Fridge?" / Pantry Matcher Widget -->
+    <section class="pantry-section" id="pantry-section">
+      <div class="container">
+        <div class="pantry-card">
+          <div class="pantry-header">
+            <div class="pantry-title-group">
+              <span class="pantry-icon"><i class="fa-solid fa-kitchen-set"></i></span>
+              <div>
+                <h2 class="pantry-heading">What's in Your Fridge?</h2>
+                <p class="pantry-subheading">Select ingredients you have at home to see recipes you can whip up right now!</p>
+              </div>
+            </div>
+            <button class="secondary-btn" id="reset-pantry-btn">
+              <i class="fa-solid fa-rotate-left"></i> Reset Pantry
+            </button>
+          </div>
+
+          <div class="pantry-tags-container" id="pantry-tags-container">
+            <!-- Common Fridge Ingredients clickable tags -->
+            <button class="pantry-tag" data-ing="Chicken"><i class="fa-solid fa-plus"></i> Chicken</button>
+            <button class="pantry-tag" data-ing="Paneer"><i class="fa-solid fa-plus"></i> Paneer</button>
+            <button class="pantry-tag" data-ing="Garlic"><i class="fa-solid fa-plus"></i> Garlic</button>
+            <button class="pantry-tag" data-ing="Tomato"><i class="fa-solid fa-plus"></i> Tomato</button>
+            <button class="pantry-tag" data-ing="Cheese"><i class="fa-solid fa-plus"></i> Cheese</button>
+            <button class="pantry-tag" data-ing="Eggs"><i class="fa-solid fa-plus"></i> Eggs</button>
+            <button class="pantry-tag" data-ing="Rice"><i class="fa-solid fa-plus"></i> Rice</button>
+            <button class="pantry-tag" data-ing="Pasta"><i class="fa-solid fa-plus"></i> Pasta</button>
+            <button class="pantry-tag" data-ing="Onion"><i class="fa-solid fa-plus"></i> Onion</button>
+            <button class="pantry-tag" data-ing="Potato"><i class="fa-solid fa-plus"></i> Potato</button>
+            <button class="pantry-tag" data-ing="Butter"><i class="fa-solid fa-plus"></i> Butter</button>
+            <button class="pantry-tag" data-ing="Lemon"><i class="fa-solid fa-plus"></i> Lemon</button>
+          </div>
+
+          <div class="pantry-footer">
+            <span class="pantry-status" id="pantry-status">Selected: <strong>None</strong></span>
+            <button class="primary-btn" id="pantry-find-btn">
+              <i class="fa-solid fa-magnifying-glass"></i> Match Recipes
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Chef's Spotlight Showcase Banner -->
+    <section class="spotlight-section" id="spotlight-section">
+      <div class="container">
+        <div class="spotlight-card" id="spotlight-card">
+          <div class="spotlight-media">
+            <img id="spotlight-img" src="https://www.themealdb.com/images/media/meals/qptpvt1487339892.jpg" alt="Recipe Spotlight">
+            <div class="spotlight-overlay">
+              <span class="spotlight-badge"><i class="fa-solid fa-star"></i> Featured Recipe</span>
+            </div>
+          </div>
+          <div class="spotlight-content">
+            <div class="spotlight-meta">
+              <span class="card-tag category-tag veg-tag" id="spotlight-category"><i class="fa-solid fa-seedling"></i> Vegetarian</span>
+              <span class="card-tag area-tag" id="spotlight-area"><i class="fa-solid fa-earth-americas"></i> Indian</span>
+              <span class="card-tag time-tag"><i class="fa-regular fa-clock"></i> ~25 mins</span>
+              <span class="card-tag diff-tag"><i class="fa-solid fa-chart-simple"></i> Easy Prep</span>
+            </div>
+            <h3 class="spotlight-title" id="spotlight-title">Paneer Butter Masala</h3>
+            <p class="spotlight-desc" id="spotlight-desc">
+              Velvety aromatic tomato-butter gravy with succulent cubes of fresh paneer, infused with fenugreek leaves and warm spices.
+            </p>
+            <div class="spotlight-actions">
+              <button class="primary-btn cook-spotlight-btn" id="spotlight-cook-btn">
+                <i class="fa-solid fa-fire"></i> Start Cooking Now
+              </button>
+              <button class="secondary-btn" id="spotlight-shuffle-btn" title="Discover another dish">
+                <i class="fa-solid fa-shuffle"></i> Try Another Dish
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Category Filter Carousel / Tabs -->
+    <section class="categories-section" aria-label="Recipe categories">
+      <div class="container">
+        <div class="section-header categories-header">
+          <div>
+            <h2 class="section-title">Explore by Category</h2>
+            <span class="section-subtitle">Find dishes by meal type or cooking style</span>
+          </div>
+        </div>
+        <div class="category-pills" id="category-pills-container" role="tablist">
+          <!-- Populated dynamically via JS -->
+          <button class="category-pill active" data-category="All" role="tab" aria-selected="true">
+            <i class="fa-solid fa-border-all"></i> All Recipes
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Interactive Cooking Duration Filter Pills -->
+    <section class="filter-chips-section">
+      <div class="container">
+        <div class="duration-chips" id="duration-chips">
+          <span class="duration-label"><i class="fa-regular fa-clock"></i> Prep Time:</span>
+          <button class="duration-chip active" data-time="all">Any Duration</button>
+          <button class="duration-chip" data-time="quick">&lt; 20 Mins (Quick)</button>
+          <button class="duration-chip" data-time="medium">20 - 40 Mins</button>
+          <button class="duration-chip" data-time="gourmet">40+ Mins (Gourmet)</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Recipe Results Grid Section -->
+    <section class="recipes-section" id="recipes-section">
+      <div class="container">
+        <div class="results-toolbar">
+          <div class="results-info">
+            <h2 id="results-heading">Featured Recipes</h2>
+            <span class="results-count" id="results-count">Loading recipes...</span>
+          </div>
+
+          <div class="results-filters">
+            <!-- Cuisine / Area Filter Dropdown -->
+            <div class="select-wrapper">
+              <i class="fa-solid fa-earth-americas select-icon"></i>
+              <select id="cuisine-select" aria-label="Filter by cuisine">
+                <option value="all">All Cuisines</option>
+                <option value="Italian">Italian</option>
+                <option value="Indian">Indian</option>
+                <option value="Mexican">Mexican</option>
+                <option value="French">French</option>
+                <option value="Japanese">Japanese</option>
+                <option value="Chinese">Chinese</option>
+                <option value="American">American</option>
+                <option value="Thai">Thai</option>
+                <option value="Greek">Greek</option>
+                <option value="Canadian">Canadian</option>
+              </select>
+            </div>
+
+            <!-- Sort Select -->
+            <div class="select-wrapper">
+              <i class="fa-solid fa-arrow-down-short-wide select-icon"></i>
+              <select id="sort-select" aria-label="Sort recipes">
+                <option value="default">Sort: Default</option>
+                <option value="name-asc">Name (A → Z)</option>
+                <option value="name-desc">Name (Z → A)</option>
+              </select>
+            </div>
+
+            <!-- Layout View Switcher (Grid vs List) -->
+            <div class="view-toggle-group" role="group" aria-label="Layout view mode">
+              <button class="view-toggle-btn active" id="view-grid-btn" title="Grid View" aria-label="Grid view">
+                <i class="fa-solid fa-table-cells"></i>
+              </button>
+              <button class="view-toggle-btn" id="view-list-btn" title="List View" aria-label="List view">
+                <i class="fa-solid fa-list"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recipe Grid / List Container -->
+        <div class="recipe-grid view-mode-grid" id="recipe-grid" aria-live="polite">
+          <!-- Dynamically populated or skeleton loader -->
+        </div>
+
+        <!-- Empty & Error States -->
+        <div class="state-container" id="empty-state" style="display: none;">
+          <div class="state-icon"><i class="fa-solid fa-utensils"></i></div>
+          <h3>No Recipes Found</h3>
+          <p id="empty-state-message">We couldn't find any recipes matching your criteria. Try another ingredient or category!</p>
+          <button class="primary-btn" id="reset-search-btn">Reset Filters</button>
+        </div>
+
+        <div class="state-container" id="error-state" style="display: none;">
+          <div class="state-icon error-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+          <h3>Unable to connect</h3>
+          <p>We had trouble reaching the recipe service. Please check your network and retry.</p>
+          <button class="primary-btn" id="retry-btn">Try Again</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Recipe Details Interactive Modal (<dialog>) -->
+  <dialog class="recipe-dialog" id="recipe-modal" aria-labelledby="modal-recipe-title">
+    <div class="dialog-wrapper">
+      <button class="dialog-close-btn" id="modal-close-btn" aria-label="Close details">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="dialog-content" id="modal-content">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Fullscreen Immersive Kitchen Cook Mode Overlay -->
+  <div class="cook-mode-overlay" id="cook-mode-overlay" aria-hidden="true">
+    <div class="cook-mode-header">
+      <div class="cook-mode-title-wrap">
+        <span class="cook-mode-badge"><i class="fa-solid fa-fire-burner"></i> COOKING MODE</span>
+        <h2 id="cook-mode-recipe-title">Recipe Title</h2>
+      </div>
+      <div class="cook-mode-top-actions">
+        <button class="cook-mode-btn" id="cook-mode-speech-btn" title="Read current step aloud">
+          <i class="fa-solid fa-volume-high"></i> <span>Read Step</span>
+        </button>
+        <button class="cook-mode-btn exit-btn" id="cook-mode-exit-btn">
+          <i class="fa-solid fa-xmark"></i> <span>Close</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="cook-mode-body">
+      <div class="cook-mode-step-container">
+        <span class="cook-mode-step-indicator" id="cook-mode-step-indicator">STEP 1 OF 6</span>
+        <div class="cook-mode-step-card">
+          <p class="cook-mode-step-text" id="cook-mode-step-text">Instruction content goes here...</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="cook-mode-footer">
+      <div class="cook-mode-nav-btns">
+        <button class="cook-nav-btn" id="cook-mode-prev-btn">
+          <i class="fa-solid fa-arrow-left"></i> Previous Step
+        </button>
+        <button class="cook-nav-btn check-step-btn" id="cook-mode-check-btn">
+          <i class="fa-solid fa-check"></i> Mark Step Done
+        </button>
+        <button class="cook-nav-btn primary-nav" id="cook-mode-next-btn">
+          Next Step <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+      <div class="cook-mode-progress-bar">
+        <div class="cook-mode-progress-fill" id="cook-mode-progress-fill"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Favorites Drawer / Sidebar Modal -->
+  <aside class="drawer" id="favorites-drawer" aria-hidden="true" role="dialog" aria-labelledby="drawer-title">
+    <div class="drawer-overlay" id="drawer-overlay"></div>
+    <div class="drawer-panel">
+      <div class="drawer-header">
+        <div class="drawer-title-group">
+          <i class="fa-solid fa-heart drawer-icon"></i>
+          <h2 id="drawer-title">Recipe Bookmarks</h2>
+        </div>
+        <div class="drawer-actions">
+          <button class="clear-all-favs-btn" id="clear-all-favs-btn" title="Remove all saved favorites">
+            <i class="fa-regular fa-trash-can"></i> Clear All
+          </button>
+          <button class="icon-btn" id="close-drawer-btn" aria-label="Close saved recipes">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="drawer-body">
+        <div class="favorites-list" id="favorites-list">
+          <!-- Populated dynamically -->
+        </div>
+        <div class="drawer-empty-state" id="favorites-empty-state">
+          <div class="empty-icon-circle">
+            <i class="fa-regular fa-heart"></i>
+          </div>
+          <p class="empty-title">Your Recipe Box is Empty</p>
+          <p class="empty-desc">Tap the heart icon on any dish to save it for your next cooking session.</p>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Floating Back to Top Button -->
+  <button id="back-to-top-btn" class="back-to-top-btn" aria-label="Back to top" title="Scroll to top">
+    <i class="fa-solid fa-arrow-up"></i>
+  </button>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast" role="status" aria-live="polite">
+    <span class="toast-icon" id="toast-icon"><i class="fa-solid fa-check"></i></span>
+    <span class="toast-message" id="toast-message">Recipe saved to favorites</span>
+  </div>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <div class="container footer-container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <div class="logo-icon-wrap small-logo">
+            <i class="fa-solid fa-fire-burner"></i>
+          </div>
+          <span class="logo-text">FOOD<strong>TALES</strong></span>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2024 FoodTales. Simple recipes and cooking inspiration for everyday home meals.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- App Script -->
+  <script src="app.js"></script>
+</body>
+</html>
